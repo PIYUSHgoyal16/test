@@ -43,7 +43,7 @@ ___
 * texttotext
 * urftopdf
 
-#pdftoippprinter
+<!-- pdftoippprinter -->
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
         imagetopdf <job> <user> <title> <num-copies> <options> [<filename>]
 
-    "imagetopdf" ignores \<job> and \<user>.
+    "imagetopdf" simply ignores \<job> and \<user>. However, one should not miss out these arguments, as the command will result in error in case it is devoid of these arguments.
 
     **\<title>** is appended into the PDF dictionary as /Title.
 
@@ -101,6 +101,13 @@ ___
 
 5. <h3 id="imagetopdfoptions"> COMMAND OPTIONS </h3>
 
+    \<options> are delimited by space; boolean type CUPS options can be set
+    by only adding the option key, other types are provided as
+    pairs of key and value, \<key>=\<value>.
+
+        ./imagetopdf job user title 1 '-o mirror -o Copies=10' flower.jpg >> output.pdf
+
+
     "imagetopdf" accepts the following CUPS standard options;
 
     * #### fitplot
@@ -114,24 +121,117 @@ ___
         not allow to set any options like "scaling" or the page size. With
         "scale-to-fit" mode set by default, the iOS photos come out on one
         page, as expected.
-
+        
         To get back to the old behavior, supply one of the options
         "nofitplot" "filplot=Off", "nofit-to-page", or "fit-to-page=Off".
 
+        | Default     | No Fitplot          |
+        | -------- | -------------- |
+        | ```./imagetopdf job user title 1 fitplot flower.jpg >> default.pdf ``` | ```./imagetopdf job user title 1 fitplot=Off flower.jpg >> fitplotOff.pdf``` |
+        | ![default-1](https://user-images.githubusercontent.com/43112419/84997961-d49f1080-b16c-11ea-8ef5-c9ae91d0970f.jpg) | ![fitplotOff-1](https://user-images.githubusercontent.com/43112419/84997973-d9fc5b00-b16c-11ea-9e5f-b4460345159d.jpg) |
+
+    <br>
 
     * #### mirror
+        A mirror image is a reflected duplication of an image that appears almost identical, but is reversed in the direction perpendicular to the vertical axis. It is an image flipped with respect to vertical axis.     
+        The mirror is a boolean option, which when set to True, produces a mirror image of the input image. Only specifying the mirror argument is enough as this is a boolean option and does not expect any analog value.  
+
+        | Default     | Mirror          |
+        | -------- | -------------- |
+        | ```./imagetopdf job user title 1 fitplot flower.jpg >> default.pdf ``` | ```./imagetopdf job user title 1 mirror flower.jpg >> mirror.pdf``` |
+        | ![default-1](https://user-images.githubusercontent.com/43112419/84997961-d49f1080-b16c-11ea-8ef5-c9ae91d0970f.jpg) | ![mirror-1](https://user-images.githubusercontent.com/43112419/84997988-de287880-b16c-11ea-91e9-f2d1d19378fe.jpg) |
+        
+    <br>
+
     * #### PageSize
+        PageSize Option as the name suggests can be used to determine the PageSize over which the file is expected to be printed. The Default PageSize is "A4". However the other PageSize Options include;
+        * A0
+        * A1
+        * A2
+        * A3
+        * A4
+        * B
+        * C
+        * D
+        * E
+        * Letter
+        * Legal
+        * Tabloid
+
+        <br>
+
+        An Example to use the PageSize "Letter" is given below;
+
+            ./imagetopdf job user title 1 PageSize=Letter flower.jpg >> output.pdf
+    
+    <br>
+
+    * #### Copies
+        This option can be used to produce multiple copies of the same image. It accepts a numerical value and creates that many number of copies of the inputed image. An Example to produce 10 copies of an image is given below;
+         <br>
+
+        ```./imagetopdf job user title 1 Copies=10 flower.jpg >> output.pdf```
+
+
+    <br>
+    
     * #### page-left, page-right, page-bottom, page-top
+
+    <br>
+    
     * #### OutputOrder
+    
+    <br>
+    
     * #### Collate
+    
+    <br>
+    
     * #### sides
+    
+    <br>
+    
     * #### cupsEvenDuplex
+    
+    <br>
+    
     * #### position
+    
+    <br>
+    
     * #### scaling
+    
+    <br>
+    
     * #### ppi
+       PPI, or pixels per inch, refers both to the fixed number of pixels that a screen can display and the density of pixels within a digital image. PPI is most useful in preparing files for printing. Increasing the PPI increases the size of the file. An image with a higher PPI tends to be higher quality because it has a greater pixel density.
+    
+    <br>
+    
     * #### natural-scaling
-    * #### landscape
+    
+    <br>
+    
     * #### orientation-requested
+        Page orientation is the way in which a rectangular page is oriented for normal viewing. The two most common orientations are "Portrait" and "Landscape". The other two options provided by "imagetopdf" filter are "reverse-landscape" and "reverse-portrait".
+
+        | Portrait     | Landscape          | reverse-portrait     | reverse-landscape          |
+        | -------- | -------------- |-------- | ----------- |
+        | ```./imagetopdf job user title 1 orientation-requested=Portrait flower.jpg >> portrait.pdf``` | ```./imagetopdf job user title 1 orientation-requested=Landscape flower.jpg >> landscape.pdf``` |```./imagetopdf job user title 1 orientation-requested=reverse-portrait flower.jpg >> reversePortrait.pdf ``` | ```./imagetopdf job user title 1 orientation-requested=reverse-landscape flower.jpg >> reverseLandscape.pdf``` |
+        | ![portrait-1](https://user-images.githubusercontent.com/43112419/85009785-a1fd1400-b17c-11ea-9ea5-672878fa173f.jpg) | ![landscape-1](https://user-images.githubusercontent.com/43112419/85009751-96115200-b17c-11ea-977b-d6064d1d431c.jpg) | ![reversePortrait-1](https://user-images.githubusercontent.com/43112419/85009803-ab867c00-b17c-11ea-8e4f-ee8023025a17.jpg) | ![reverseLandscape-1](https://user-images.githubusercontent.com/43112419/85009796-a75a5e80-b17c-11ea-84fd-15c8e2101a85.jpg) |
+
+    <br>
+
+    * #### landscape
+        The default orientation is auto-detected by imagetopdf filter according to the length and width of the input image, resulting in the best possible way to fill one page but nothing of the image being cut off. However,To set default Landscape Orientation, supply one of the options "landscape=yes", or "landscape=true".
+        
+        Note that the option "orientation-requested" is given priority over "landscape" option, i.e. if we provide both options, "orientation-requested" will be used to determine the final orientation.
+        <br>
+
+            ./imagetopdf job user title 1 landscape=yes flower.jpg >> output.pdf
+
+
+    <br>
 
 6. ### KNOWN PROBLEMS
 
@@ -369,4 +469,3 @@ ___
 ___
 
 <h2 id="rastertopdf"> RASTERTOPDF </h2>
-
