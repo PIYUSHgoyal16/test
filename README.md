@@ -1,24 +1,32 @@
+# CUPS Filters - 2020-06-11
+__________________________________________________________
+
 ## INSTALLATION
 
-For compiling and using this package CUPS, libqpdf (8.3.0 or
-newer), libjpeg, libpng, libtiff, freetype, fontconfig, liblcms
-(liblcms2 recommended), libavahi-common, libavahi-client, libdbus,
-and glib are needed. It is highly recommended, especially if
-non-PDF printers are used, to have at least one of Ghostscript,
-Poppler, or MuPDF.
+**Prerequisites;** 
+You'll need ANSI-compliant C and C++ compilers, plus a make program and POSIX-compliant shell (/bin/sh). For compiling and using this package CUPS, libqpdf (8.3.0 or newer), libjpeg, libpng, libtiff, freetype, fontconfig, liblcms(liblcms2 recommended), libavahi-common, libavahi-client, libdbus, and glib are needed. It is highly recommended, especially if non-PDF printers are used, to have at least one of Ghostscript, Poppler, or MuPDF.
 
 Step 1: Clone the official cups repository.
-```bash
-git clone https://github.com/OpenPrinting/cups-filters.git
-```
 
-Step 2:  
+    git clone https://github.com/OpenPrinting/cups-filters.git
 
+
+Step 2: Move into the cups-filters directory and configure CUPS for your system through the usual "configure" script in the main CUPS Filters source directory, using the following command: 
+    
+    ./configure
+
+Step 3: After configuration use the make command to build executables from the source code;
+
+    make ENTER
+
+Step 4: Once you have built the software you need to install it using the command;
+
+    sudo make install
+
+Read the file "INSTALL.txt" for detailed compile instructions.
 ___
 
 ## List of CUPS Filters
-
-* [pdftopdf](#pdftopdf)
 
 * bannertopdf
 * commandtoescpx
@@ -31,6 +39,7 @@ ___
 * imagetoraster
 * mupdftoraster
 * pclmtoraster
+* **[pdftopdf](#pdftopdf)**
 * [pdftops](#pdftops)
 * [pdftoraster](#pdftoraster)
 * rastertoescpx
@@ -70,14 +79,17 @@ ___
     "imagetopdf" may outputs multiple pages if the input image exceeds page
     printable area.
 
+    <br>
+
 2. ### LICENSE
 
     "imagetopdf.c" is under the CUPS license. See the "COPYING" file.
     For other files, see the copyright notice and license of each file.
 
+    <br>
+
 3. ### COMMAND LINE
-    "imagetopdf" is a CUPS filter, and the command line arguments, environment variables and configuration files are in accordance with the CUPS filter
-    interface.
+    "imagetopdf" is a CUPS filter, and the command line arguments, environment variables and configuration files are in accordance with the CUPS filter interface.
 
         imagetopdf <job> <user> <title> <num-copies> <options> [<filename>]
 
@@ -93,37 +105,33 @@ ___
 
     When omit the **\<filename>**, "imagetopdf" reads an image file from **stdin**.
 
+    <br>
+
 4. ### ENVIRONMENT VARIABLES
 
     This program refers the following environment variable;
 
         PPD:  PPD file name of the printer.
 
+    <br>
+
 5. <h3 id="imagetopdfoptions"> COMMAND OPTIONS </h3>
 
-    \<options> are delimited by space; boolean type CUPS options can be set
-    by only adding the option key, other types are provided as
-    pairs of key and value, \<key>=\<value>.
+    \<options> are delimited by space; boolean type CUPS options can be set by only adding the option key, other types are provided as pairs of key and value, \<key>=\<value>.
 
         ./imagetopdf job user title 1 '-o mirror -o Copies=10' flower.jpg >> output.pdf
 
 
     "imagetopdf" accepts the following CUPS standard options;
 
-    * #### fitplot
-        Compared to the PostScript-based original CUPS filters there is a
-        change of defaults: The imagetopdf and imagetoraster filters print
-        in "scale-to-fit" mode (image is scaled to fill one page but
-        nothing of the image being cut off) by default.
+    <br>
 
-        This is done to support photo printing via AirPrint. The photo
-        apps on Apple's iOS devices send print jobs as JPEG images and do
-        not allow to set any options like "scaling" or the page size. With
-        "scale-to-fit" mode set by default, the iOS photos come out on one
-        page, as expected.
+    * #### fitplot
+        Compared to the PostScript-based original CUPS filters there is a change of defaults: The imagetopdf and imagetoraster filters print in "scale-to-fit" mode (image is scaled to fill one page but nothing of the image being cut off) by default.
+
+        This is done to support photo printing via AirPrint. The photo apps on Apple's iOS devices send print jobs as JPEG images and do not allow to set any options like "scaling" or the page size. With "scale-to-fit" mode set by default, the iOS photos come out on one page, as expected.
         
-        To get back to the old behavior, supply one of the options
-        "nofitplot" "filplot=Off", "nofit-to-page", or "fit-to-page=Off".
+        To get back to the old behavior, supply one of the options "nofitplot" "filplot=Off", "nofit-to-page", or "fit-to-page=Off".
 
         | Default     | No Fitplot          |
         | -------- | -------------- |
@@ -185,6 +193,7 @@ ___
     <br>
     
     * #### page-left, page-right, page-bottom, page-top
+        I could not find these options in imagetopdf.c 
 
     <br>
     
@@ -220,20 +229,29 @@ ___
         <br> 
 
         Kindly Note that we have also used "fitplot=off" argument in order to demonstrate the position argument. Otherwise the image will fill the whole page and position wont make a difference. 
-        
-    
+
+        <br>
+
+    * #### ppi
+       PPI, or pixels per inch, refers both to the fixed number of pixels that a screen can display and the density of pixels within a digital image. PPI is most useful in preparing files for printing. An image with a higher PPI tends to be higher quality because it has a greater pixel density. We can define ppi using "ppi" option.
+
+            ./imagetopdf job user title 1 ppi=250 flower.jpg >> ppi1.pdf        
+        <br>
+        Both xppi and yppi can be set to different values using the following syntax; 
+            
+            ./imagetopdf job user title 1 ppi=250x500 flower.jpg >> ppi2.pdf
+            
     <br>
     
     * #### scaling
     
     <br>
-    
-    * #### ppi
-       PPI, or pixels per inch, refers both to the fixed number of pixels that a screen can display and the density of pixels within a digital image. PPI is most useful in preparing files for printing. Increasing the PPI increases the size of the file. An image with a higher PPI tends to be higher quality because it has a greater pixel density.
-    
-    <br>
+
     
     * #### natural-scaling
+        This boolean option when passed true, makes the zoom level zero. Hence it can be considered as a subset of "scaling" option where the passed numerical scaling factor is 0.
+
+            ./imagetopdf job user title 1 natural-scaling flower.jpg >> naturalscaling.pdf
     
     <br>
     
@@ -340,7 +358,7 @@ ___
 
     * #### orientation-requested
 
-        | orientation-requested = 3     | orientation-requested = 4          | orientation-requested = 5     | orientation-requested = 6          |
+        | orientation-requested=3     | orientation-requested=4          | orientation-requested=5     | orientation-requested=6          |
         | -------- | -------------- |-------- | ----------- |
         | ```./imagetopdf job user title 1 orientation-requested=Portrait flower.jpg >> portrait.pdf``` | ```./imagetopdf job user title 1 orientation-requested=Landscape flower.jpg >> landscape.pdf``` |```./imagetopdf job user title 1 orientation-requested=reverse-portrait flower.jpg >> reversePortrait.pdf ``` | ```./imagetopdf job user title 1 orientation-requested=reverse-landscape flower.jpg >> reverseLandscape.pdf``` |
         | [orientationRequested3.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [orientationRequested4.pdf](https://github.com/PIYUSHgoyal16/test/files/4804360/landscape.pdf) | [orientationRequested5.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [orientationRequested6.pdf](https://github.com/PIYUSHgoyal16/test/files/4804360/landscape.pdf) |
@@ -531,5 +549,4 @@ ___
 ___
 
 <h2 id="rastertopdf"> RASTERTOPDF </h2>
-
 
