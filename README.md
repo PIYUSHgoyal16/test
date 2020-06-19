@@ -163,6 +163,15 @@ ___
         An Example to use the PageSize "Letter" is given below;
 
             ./imagetopdf job user title 1 PageSize=Letter flower.jpg >> output.pdf
+
+        You can also provide a Custom Page Size, using the commands given in the table.
+
+        | Default(A4)     | inch          | cm     | points (1/72 of an inch)          |
+        | -------- | -------------- |-------- | ----------- |
+        | ```./imagetopdf job user title 1 PageSize=A4 flower.jpg >> a4.pdf``` | ```./imagetopdf job user title 1 PageSize=Custom.4x6in flower.jpg >> inch.pdf``` |```./imagetopdf job user title 1 PageSize=Custom.4x8cm flower.jpg >> cm.pdf ``` | ```./imagetopdf job user title 1 PageSize=Custom.100x120 flower.jpg >> points.pdf``` |
+        | ![a4-1](https://user-images.githubusercontent.com/43112419/85134840-bd3e5100-b25a-11ea-8df9-8837adfb6178.jpg) | ![inch-1](https://user-images.githubusercontent.com/43112419/85134812-b44d7f80-b25a-11ea-9e75-2308358cf681.jpg) | ![cm-1](https://user-images.githubusercontent.com/43112419/85134827-b9aaca00-b25a-11ea-859a-3c0b40ad7559.jpg) | ![points-1](https://user-images.githubusercontent.com/43112419/85134852-c16a6e80-b25a-11ea-9c31-e796f13a8167.jpg) |
+
+        Note that the filter will scale the page image up or down to the size that makes you PDF fit onto the sheet.
     
     <br>
 
@@ -196,6 +205,22 @@ ___
     <br>
     
     * #### position
+        This common line option decides the position of the image on the paper. The default position is **center**. Some of the positional arguments are given in the table, while others are listed below it. 
+        | center | top     | bottom          | left     | right          |
+        | --------| -------- | -------------- |-------- | ----------- |
+        | ```./imagetopdf job user title 1 '-o fitplot=off position=center' flower.jpg >> center.pdf``` | ```./imagetopdf job user title 1 '-o fitplot=off position=top' flower.jpg >> top.pdf``` |```./imagetopdf job user title 1 '-o fitplot=off position=bottom' flower.jpg >> bottom.pdf ``` | ```./imagetopdf job user title 1 '-o fitplot=off position=left' flower.jpg >> left.pdf```|```./imagetopdf job user title 1 '-o fitplot=off position=right' flower.jpg >> right.pdf``` | 
+        | ![center-1](https://user-images.githubusercontent.com/43112419/85134309-e9a59d80-b259-11ea-97da-dba839c71f6b.jpg)|![top-1](https://user-images.githubusercontent.com/43112419/85134362-faeeaa00-b259-11ea-9195-f5af2fbc8ffe.jpg) |![bottom-1](https://user-images.githubusercontent.com/43112419/85134315-ed392480-b259-11ea-8195-70e9236ce711.jpg) | ![left-1](https://user-images.githubusercontent.com/43112419/85134332-f1fdd880-b259-11ea-898c-b090c681415d.jpg)| ![right-1](https://user-images.githubusercontent.com/43112419/85134348-f6c28c80-b259-11ea-9bbd-caabc8805fa3.jpg) |
+
+        
+        The Other argument values we could pass include:
+        * top-right
+        * top-left
+        * bottom-right
+        * bottom-left
+        <br> 
+
+        Kindly Note that we have also used "fitplot=off" argument in order to demonstrate the position argument. Otherwise the image will fill the whole page and position wont make a difference. 
+        
     
     <br>
     
@@ -252,29 +277,76 @@ ___
     A similar filter (which can serve as behavior reference)
     is called "cgpdftopdf" in OS X (not open source).
 
-2. ### COMMAND LINE
+3. ### License
+
+    pdftopdf is released under the MIT license.
+
+    The required libqpdf is available under version 2.0 of the Apache License,
+    e.g. here: https://github.com/qpdf/qpdf
+
+3. ### COMMAND LINE
 
     pdftopdf follows the usual CUPS filter calling conventions, i.e.
 
-    pdftopdf \<job> \<user> \<title> \<num-copies> \<options> [\<filename>]
+        pdftopdf <job> <user> <title> <num-copies> <options> [<filename>]
 
     together with the environment variables "PPD" and "CLASSIFICATION".
+    
+    **\<title>** is appended into the PDF dictionary as /Title.
 
-    When omitting \<filename>, "pdftopdf" reads a PDF file from stdin.
+    **\<num-copies>** specifies the number of document copies.
+
+    **\<options>** is a CUPS option list. The detailed list of options along examples can be found [below](#pdftopdfoptions).
+
+    **\<filename>** is an input image file name.
+
+    When omit the **\<filename>**, "imagetopdf" reads an image file from **stdin**.
     Internally this will write the data to a temporary file, because
     the PDF format cannot be processed in a streaming fashion.
-
-    \<options> are delimited by space; boolean type CUPS options can be set
-    by only adding the option key, other types are provided as
-    pairs of key and value, \<key>=\<value>.
-
-3. <h3 id="pdftopdfoptions"> COMMAND OPTIONS </h3>
+4. <h3 id="pdftopdfoptions"> COMMAND OPTIONS </h3>
 
     "pdftopdf" processes the following standard command-line and/or PPD options:
 
-    * #### Copies      # ppd will only override, when commandline parameter was 1
+    * #### Copies
+        This option can be used to produce multiple copies of all the pages of a pdf file. It accepts a numerical value and creates that many number of copies of the inputed file. 
+
+        | Default  | Multiple Copies|
+        | -------- | -------------- |
+        | ```./pdftopdf job user title 1 fitplot=false openprinting.pdf >> copies.pdf``` | ```./pdftopdf job user title 1 Copies=3 openprinting.pdf >> copies.pdf``` |
+        | [default.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [copies.pdf](https://github.com/PIYUSHgoyal16/test/files/4804359/copies.pdf) |
+
+        Note that if we provide **Copies=0**, then one copy will be outputed rather than a blank pdf file.
+
+        ppd will only override, when commandline parameter was 1.
+        <br>
+
     * #### fitplot / fit-to-page / ipp-attribute-fidelity
-    * #### landscape / orientation-requested
+
+        | Default  | Fit-to-page    |
+        | -------- | -------------- |
+        | ```./pdftopdf job user title 1 fitplot=false openprinting.pdf >> copies.pdf``` | ```./pdftopdf job user title 1 fitplot=true openprinting.pdf >> copies.pdf``` |
+        | [default.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [fitplot.pdf](https://github.com/PIYUSHgoyal16/test/files/4804362/fitplot.pdf) |
+
+        <br>
+    
+    * #### landscape
+
+        | Landscape=Off  | Landscape    |
+        | -------- | -------------- |
+        | ```./pdftopdf job user title 1 landscape=off openprinting.pdf >> landscape.pdf``` | ```./pdftopdf job user title 1 landscape openprinting.pdf >> landscape.pdf``` |
+        | [landscapeoff.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [landscape.pdf](https://github.com/PIYUSHgoyal16/test/files/4804360/landscape.pdf) |
+
+        <br>
+
+    * #### orientation-requested
+
+        | orientation-requested = 3     | orientation-requested = 4          | orientation-requested = 5     | orientation-requested = 6          |
+        | -------- | -------------- |-------- | ----------- |
+        | ```./imagetopdf job user title 1 orientation-requested=Portrait flower.jpg >> portrait.pdf``` | ```./imagetopdf job user title 1 orientation-requested=Landscape flower.jpg >> landscape.pdf``` |```./imagetopdf job user title 1 orientation-requested=reverse-portrait flower.jpg >> reversePortrait.pdf ``` | ```./imagetopdf job user title 1 orientation-requested=reverse-landscape flower.jpg >> reverseLandscape.pdf``` |
+        | [orientationRequested3.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [orientationRequested4.pdf](https://github.com/PIYUSHgoyal16/test/files/4804360/landscape.pdf) | [orientationRequested5.pdf](https://github.com/PIYUSHgoyal16/test/files/4804357/output.pdf) | [orientationRequested6.pdf](https://github.com/PIYUSHgoyal16/test/files/4804360/landscape.pdf) |
+
+    <br>
+
     * #### PageSize / page-size / MediaSize / media-size
     * #### page-left / page-right / page-bottom / page-top
     * #### media-top-margin / media-left-margin / media-right-margin / media-bottom-margin
@@ -292,7 +364,7 @@ ___
     * #### cupsEvenDuplex
     * #### cupsManualCopies  # via ppd
 
-4. ### Additional (non-standard) options
+5. ### Additional (non-standard) options
 
     1) Booklet printing
 
@@ -371,8 +443,7 @@ ___
     form stays unflattened and so the filled in data will possibly not get
     printed.
 
-Native PDF Printer / JCL Support
---------------------------------
+6. ### Native PDF Printer / JCL Support
 
 Note that for most modern native PDF printers JCL is not needed any
 more as they are controlled via IPP. For these the PPD files get
@@ -400,8 +471,7 @@ or "@PJL SET QTY=...", respectively.
 
 Other JCL code can be injected via "*JCLOpenUI: ..." ... "*JCLCloseUI: ...".
 
-Special PDF comments
---------------------
+7. ### Special PDF comments
 
 pdftopdf adds comments to the pdf preamble that might esp. be of use
 to subsequent filters, e.g.
@@ -413,8 +483,7 @@ to subsequent filters, e.g.
 The "NumCopies" and "Collate" values refer to the expected device/hardware
 copies, i.e. when pdftopdf's soft-copy generation did not handle this options.
 
-Limitations
------------
+8. ### Limitations
 
 pdftopdf does not support functions that are not related to printing
 features, including interactive features and document interchange features.
@@ -429,8 +498,7 @@ Usual PDF viewer applications (xpdf, evince, acroread, ghostscript, ...)
 will hardcopy the form content into printable pdf operations,
 when choosing to print such a document.
 
-Known issues
-------------
+9. ### Known issues
 
 - Borders, esp. in the "number-up=1 fitplot=false"-case might be drawn
   at incorrect locations.
@@ -441,13 +509,7 @@ Known issues
 - Missing AcroForm-content might surprise users printing PDF files directly /
   from the command-line (see the Limitations section, above).
 
-License
--------
 
-pdftopdf is released under the MIT license.
-
-The required libqpdf is available under version 2.0 of the Apache License,
-e.g. here: https://github.com/qpdf/qpdf
 
 
 ___
@@ -469,3 +531,5 @@ ___
 ___
 
 <h2 id="rastertopdf"> RASTERTOPDF </h2>
+
+
